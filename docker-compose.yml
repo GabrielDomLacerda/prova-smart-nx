@@ -1,0 +1,25 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo-data:/data/db
+
+  nodeapp:
+    build: .
+    container_name: nodeapp
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      PORT: ${PORT}
+
+volumes:
+  mongo-data:
