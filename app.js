@@ -19,6 +19,8 @@ mongoose
 app.use(express.json());
 
 app.use("/users", usersRoutes);
+app.use("/posts", postsRoutes);
+app.use("/comments", commentsRoutes);
 
 app.listen(PORT, () => {
     console.log(`Aplicação rodando na porta ${PORT}`);
