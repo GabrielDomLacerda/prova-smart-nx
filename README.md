@@ -90,10 +90,10 @@ Resposta: { "id": "id", "name": "existinguser","password": "passwordHash", "emai
 
 #### Criar Comentário
 
-POST /comments
-Corpo: { "content": "Comment Content" }
-Cabeçalho: Authorization: Bearer session_token
-Resposta: { "id": 1, "post": postId, "content": "Comment Content", "user", userId, "created_at": "2024-07-24T00:00:00Z" }
+    POST /comments
+    Corpo: { "content": "Comment Content" }
+    Cabeçalho: Authorization: Bearer session_token
+    Resposta: { "id": 1, "post": postId, "content": "Comment Content", "user", userId, "created_at": "2024-07-24T00:00:00Z" }
 
 #### Excluir comentário
 
