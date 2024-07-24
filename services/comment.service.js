@@ -26,7 +26,7 @@ async function createComment(body, userId) {
     return await Comment.findById(comment._id).populate("post");
 }
 
-async function deleteComment(id, userIdParam) {
+async function deleteComment(id, userId) {
     const comment = await Comment.findById(
         ObjectId.createFromHexString(id)
     ).populate("post");
@@ -34,8 +34,10 @@ async function deleteComment(id, userIdParam) {
         return { status: 404, error: "Comentário não encontrado ou apagado" };
     }
     const post = await Post.findById(comment?.post?._id);
-    const userId = ObjectId.createFromHexString(userIdParam);
-    if (comment.user !== userId || post.user !== userId) {
+    if (
+        comment.user._id.toHexString() !== userId ||
+        post.user._id.toHexString() !== userId
+    ) {
         return {
             status: 401,
             error: "Apenas o dono do comentário ou do post tem permissão de apagar o comentário",

@@ -38,7 +38,7 @@ async function createPost(body, userId) {
     return await post.save();
 }
 
-async function updatePost(id, body, userIdParam) {
+async function updatePost(id, body, userId) {
     if (!body?.content?.trim()) {
         return { error: "Insira um post" };
     }
@@ -46,11 +46,10 @@ async function updatePost(id, body, userIdParam) {
     const post = await Post.findById(ObjectId.createFromHexString(id)).populate(
         "user"
     );
-    const userId = ObjectId.createFromHexString(userIdParam);
     if (!post) {
         return { status: 404, error: "Post não encontrado" };
     }
-    if (post.user._id !== userId) {
+    if (post.user._id.toHexString() !== userId) {
         return {
             status: 401,
             error: "Apenas o dono do post tem permissão de editar o post",
@@ -62,15 +61,14 @@ async function updatePost(id, body, userIdParam) {
     return post;
 }
 
-async function deletePost(id, userIdParam) {
+async function deletePost(id, userId) {
     const post = await Post.findById(ObjectId.createFromHexString(id)).populate(
         "user"
     );
-    const userId = ObjectId.createFromHexString(userIdParam);
     if (!post) {
         return { status: 404, error: "Post não encontrado" };
     }
-    if (post.user._id !== userId) {
+    if (post.user._id.toHexString() !== userId) {
         return {
             status: 401,
             error: "Apenas o dono do post tem permissão de apagar o post",
