@@ -21,14 +21,23 @@ async function createComment(body, userId) {
     return await Comment.findById(comment._id).populate("post");
 }
 
-async function deleteComment(id) {
-    const comment = await Comment.findByIdAndDelete(
+async function deleteComment(id, userIdParam) {
+    const comment = await Comment.findById(
         ObjectId.createFromHexString(id)
-    );
-    if (comment) {
-        return true;
+    ).populate("post");
+    const post = await Post.findById(comment.post._id).populate("user");
+    const userId = ObjectId.createFromHexString(userIdParam);
+    if (!comment) {
+        return { status: 404, error: "Comentário não encontrado ou apagado" };
     }
-    return false;
+    if (comment.user._id !== userId || post.user._id !== userId) {
+        return {
+            status: 401,
+            error: "Apenas o dono do comentário ou do post tem permissão de apagar o comentário",
+        };
+    }
+    await comment.deleteOne();
+    return { status: 200 };
 }
 
 const commentService = {

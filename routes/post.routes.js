@@ -1,7 +1,10 @@
 const express = require("express");
 const { postService } = require("../services");
+const { checkAuth } = require("../middlewares");
+const { getToken, getUser } = require("../utils/utils");
 
 const router = express.Router();
+router.use(checkAuth);
 
 router.get("/", async (req, res) => {
     const posts = await postService.getAllPosts();
@@ -22,10 +25,12 @@ router.get("/user/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
     const body = req.body;
+    const token = getToken(req);
+    const userId = getUser(token);
     try {
-        const post = await postService.createPost(body, body?.userId);
+        const post = await postService.createPost(body, userId);
         if (post.error) {
-            res.status(400).send({ message: post.error });
+            res.status(post?.status || 422).send({ message: post.error });
         } else {
             res.status(201).send(post);
         }
@@ -34,16 +39,40 @@ router.post("/", async (req, res) => {
     }
 });
 
+router.put("/:id", async (req, res) => {
+    const body = req.body;
+    const id = req.params.id;
+    const token = getToken(req);
+    const userId = getUser(token);
+    try {
+        const post = await postService.updatePost(id, body, userId);
+        if (post.error) {
+            res.status(post?.status || 400).send({
+                message: post.error,
+            });
+        } else {
+            res.status(200).send(post);
+        }
+    } catch (error) {
+        res.status(500).send({
+            message: `Erro ao deletar post\n${error}`,
+        });
+    }
+});
+
 router.delete("/:id", async (req, res) => {
     const id = req.params.id;
+    const token = getToken(req);
+    const userId = getUser(token);
     try {
-        const result = await postService.deletePost(id);
-        if (result) {
+        const result = await postService.deletePost(id, userId);
+        if (result.error) {
+            res.status(result?.status || 400).send({
+                message: result.error,
+            });
+        } else {
             res.status(200).send({ message: "Post removido com sucesso!" });
         }
-        res.status(400).send({
-            message: "Post não encontrado ou já deletado anteriormente!",
-        });
     } catch (error) {
         res.status(500).send({
             message: `Erro ao deletar post\n${error}`,

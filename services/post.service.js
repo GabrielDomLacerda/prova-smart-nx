@@ -38,11 +38,45 @@ async function createPost(body, userId) {
     return await post.save();
 }
 
-async function deletePost(id) {
-    const post = await Post.findByIdAndDelete(ObjectId.createFromHexString(id));
-    if (!post) {
-        return false;
+async function updatePost(id, body, userIdParam) {
+    if (!body?.content?.trim()) {
+        return { error: "Insira um post" };
     }
+    const { content } = body;
+    const post = await Post.findById(ObjectId.createFromHexString(id)).populate(
+        "user"
+    );
+    const userId = ObjectId.createFromHexString(userIdParam);
+    if (!post) {
+        return { status: 404, error: "Post não encontrado" };
+    }
+    if (post.user._id !== userId) {
+        return {
+            status: 401,
+            error: "Apenas o dono do post tem permissão de editar o post",
+        };
+    }
+    await post.updateOne({
+        content: content,
+    });
+    return post;
+}
+
+async function deletePost(id, userIdParam) {
+    const post = await Post.findById(ObjectId.createFromHexString(id)).populate(
+        "user"
+    );
+    const userId = ObjectId.createFromHexString(userIdParam);
+    if (!post) {
+        return { status: 404, error: "Post não encontrado" };
+    }
+    if (post.user._id !== userId) {
+        return {
+            status: 401,
+            error: "Apenas o dono do post tem permissão de apagar o post",
+        };
+    }
+    await post.deleteOne();
     const comments = await Comment.deleteMany({ post: id });
     if (comments) {
         return true;
@@ -56,6 +90,7 @@ const postService = {
     getPostsByUserId,
     createPost,
     deletePost,
+    updatePost,
 };
 
 module.exports = postService;

@@ -1,14 +1,19 @@
 const express = require("express");
 const { commentService } = require("../services");
+const { checkAuth } = require("../middlewares");
+const { getToken, getUser } = require("../utils/utils");
 
 const router = express.Router();
+router.use(checkAuth);
 
 router.post("/", async (req, res) => {
     const body = req.body;
+    const token = getToken(req);
+    const userId = getUser(token);
     try {
-        const comment = await commentService.createComment(body, body.userId);
+        const comment = await commentService.createComment(body, userId);
         if (comment.error) {
-            res.status(422).send({
+            res.status(comment?.status || 500).send({
                 message: comment.error,
             });
         } else {
@@ -23,9 +28,15 @@ router.post("/", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
     const id = req.params.id;
+    const token = getToken(req);
+    const userId = getUser(token);
     try {
-        const result = await commentService.deleteComment(id);
-        if (result) {
+        const result = await commentService.deleteComment(id, userId);
+        if (result.error) {
+            res.status(result?.status || 500).send({
+                message: result.error,
+            });
+        } else {
             res.status(200).send({
                 message: "Comentário removido com sucesso!",
             });

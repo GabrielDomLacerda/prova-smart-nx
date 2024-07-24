@@ -1,6 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { User } = require("../models");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 async function getUserById(id) {
     return await User.findById(ObjectId.createFromHexString(id));
@@ -16,7 +16,7 @@ async function createUser(body) {
     if (!body?.password?.trim()) {
         return { error: "O campo senha não foi preenchido" };
     }
-    const previousUser = User.find({ email: body?.email });
+    const previousUser = await User.findOne({ email: body?.email });
     if (previousUser) {
         return { error: "Já existe um usuário cadastrado com esse email" };
     }

@@ -2,22 +2,29 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const { User, Comment, Post } = require("./models");
-const { usersRoutes, commentsRoutes, postsRoutes } = require("./routes");
+const {
+    usersRoutes,
+    commentsRoutes,
+    postsRoutes,
+    authRoutes,
+} = require("./routes");
 require("dotenv").config();
 
 // eslint-disable-next-line no-undef
 const PORT = process.env.APP_PORT;
+
 // eslint-disable-next-line no-undef
 const MONGO_URI = process.env.MONGO_URI;
 const app = express();
 
 async function connectDatabase() {
     try {
-        await mongoose.connect(MONGO_URI);
-
-        await User.createCollection();
-        await Comment.createCollection();
-        await Post.createCollection();
+        const connection = await mongoose.connect(MONGO_URI);
+        await Promise.all([
+            User.createCollection(),
+            Comment.createCollection(),
+            Post.createCollection(),
+        ]);
 
         console.log("Conexão com MongoDB estabelecida");
     } catch (err) {
@@ -34,6 +41,7 @@ app.disable("x-powered-by");
 app.use("/users", usersRoutes);
 app.use("/posts", postsRoutes);
 app.use("/comments", commentsRoutes);
+app.use("/", authRoutes);
 
 app.use((req, res) => {
     res.status(404).send("Rota não encontrada!");

@@ -1,9 +1,10 @@
 const express = require("express");
 const { userService } = require("../services");
+const { checkAuth } = require("../middlewares");
 
 const router = express.Router();
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", checkAuth, async (req, res) => {
     const id = req.params.id;
     const user = await userService.getUserById(id);
     res.json(user);
@@ -14,7 +15,7 @@ router.post("/", async (req, res) => {
     try {
         const user = await userService.createUser(body);
         if (user.error) {
-            res.status(422).send({ message: user.error });
+            res.status(user?.status || 422).send({ message: user.error });
         } else {
             res.status(201).send(user);
         }
