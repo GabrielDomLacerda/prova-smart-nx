@@ -36,7 +36,6 @@ connectDatabase();
 
 app.use(express.json());
 app.use(helmet());
-app.disable("x-powered-by");
 
 app.use("/users", usersRoutes);
 app.use("/posts", postsRoutes);

@@ -35,24 +35,24 @@ Acesse a aplicação em http://localhost:PORTA_ESCOLHIDA.
 
 #### Login
 
-POST /login
-Corpo: { "email": "email", "password": "password" }
-Resposta: { "token": "session_token" }
-(O Token gerado expira em 10 horas)
+    POST /login
+    Corpo: { "email": "email", "password": "password" }
+    Resposta: { "token": "session_token" }
+    (O Token gerado expira em 10 horas)
 
 ### Usuário
 
 #### Criar Usuário
 
-POST /users
-Corpo: { "name": "name", "password": "password", "email": "user@example.com" }
-Resposta: { "id": "id", "name": "name", "email": "user@example.com", "password": "passwordHash" }
+    POST /users
+    Corpo: { "name": "name", "password": "password", "email": "user@example.com" }
+    Resposta: { "id": "id", "name": "name", "email": "user@example.com", "password": "passwordHash" }
 
 #### Obter Usuário por ID
 
-GET /users/:id
-Cabeçalho: Authorization: Bearer session_token
-Resposta: { "id": "id", "name": "existinguser","password": "passwordHash", "email": "user@example.com" }
+    GET /users/:id
+    Cabeçalho: Authorization: Bearer session_token
+    Resposta: { "id": "id", "name": "existinguser","password": "passwordHash", "email": "user@example.com" }
 
 ### Posts
 
@@ -73,6 +73,11 @@ Resposta: { "id": "id", "name": "existinguser","password": "passwordHash", "emai
     GET /posts/:id
     Resposta: { "id": 1, "content": "Post Content", "created_at": "2024-07-24T00:00:00Z", comments: [] }
 
+#### Obter Post por id do usuário
+
+    GET /posts/:id
+    Resposta: [ { "id": 1, "content": "Post Content", "created_at": "2024-07-24T00:00:00Z", comments: [] } ]
+
 #### Atualizar post
 
     PUT /posts/:id
@@ -91,7 +96,7 @@ Resposta: { "id": "id", "name": "existinguser","password": "passwordHash", "emai
 #### Criar Comentário
 
     POST /comments
-    Corpo: { "content": "Comment Content" }
+    Corpo: { "content": "Comment Content", "postId": "postId" }
     Cabeçalho: Authorization: Bearer session_token
     Resposta: { "id": 1, "post": postId, "content": "Comment Content", "user", userId, "created_at": "2024-07-24T00:00:00Z" }
 
