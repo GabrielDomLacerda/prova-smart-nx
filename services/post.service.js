@@ -1,25 +1,45 @@
-const Post = require("../models/post");
-const Comment = require("../models/comment");
+const { ObjectId } = require("mongodb");
+const { Post, Comment } = require("../models");
 
-async function getPostById(id) {
-    return await Post.findById(id).populate("Comment");
+async function getPostById(param) {
+    const id = ObjectId.createFromHexString(param);
+    return await Post.findById(id).populate({
+        path: "comments",
+        strictPopulate: false,
+    });
 }
 
 async function getAllPosts() {
-    return await Post.find().populate("Comment");
+    return await Post.find().populate({
+        path: "comments",
+        strictPopulate: false,
+    });
 }
 
-async function getPostsByUserId() {
-    throw new Error("Método não implementado");
+async function getPostsByUserId(param) {
+    const userId = ObjectId.createFromHexString(param);
+    return await Post.find({ user: userId }).populate({
+        path: "comments",
+        strictPopulate: false,
+    });
 }
 
-async function createPost(body) {
-    const post = new Post({ user: body.userId, content: body?.content || "" });
+async function createPost(body, userId) {
+    if (!userId) {
+        return { error: "Se identifique ao criar um post" };
+    }
+    if (!body?.content?.trim()) {
+        return { error: "Insira um post" };
+    }
+    const post = new Post({
+        user: userId,
+        content: body?.content?.trim() || "",
+    });
     return await post.save();
 }
 
 async function deletePost(id) {
-    const post = await Post.findByIdAndDelete(id);
+    const post = await Post.findByIdAndDelete(ObjectId.createFromHexString(id));
     if (!post) {
         return false;
     }
