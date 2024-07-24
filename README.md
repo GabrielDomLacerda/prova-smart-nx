@@ -24,7 +24,7 @@ cd prova-smart-nx
 Você precisa de um arquivo `.env` na raiz do projeto.
 Copie a `.env.example`, renomeando-a para `.env` e preencha seus campos adequadamente.
 
-Execute o Docker Compose:
+Execute o Docker Compose: `docker-compose up`
 
 docker-compose up
 Acesse a aplicação em http://localhost:PORTA_ESCOLHIDA.
