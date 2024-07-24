@@ -33,7 +33,7 @@ Acesse a aplicação em http://localhost:PORTA_ESCOLHIDA.
 
 ### Sessão
 
--   Login
+#### Login
 
 POST /login
 Corpo: { "email": "email", "password": "password" }
@@ -42,13 +42,13 @@ Resposta: { "token": "session_token" }
 
 ### Usuário
 
--   Criar Usuário
+#### Criar Usuário
 
 POST /users
 Corpo: { "name": "name", "password": "password", "email": "user@example.com" }
 Resposta: { "id": "id", "name": "name", "email": "user@example.com", "password": "passwordHash" }
 
--   Obter Usuário por ID
+#### Obter Usuário por ID
 
 GET /users/:id
 Cabeçalho: Authorization: Bearer session_token
@@ -56,41 +56,47 @@ Resposta: { "id": "id", "name": "existinguser","password": "passwordHash", "emai
 
 ### Posts
 
--   Criar Post
+#### Criar Post
+
     POST /posts
     Corpo: { "content": "Post Content" }
     Cabeçalho: Authorization: Bearer session_token
     Resposta: { "id": 1, "content": "Post Content", "created_at": "2024-07-24T00:00:00Z" }
 
--   Obter Todos os posts
+#### Obter Todos os posts
+
     GET /posts
     Resposta: [ { "id": 1, "content": "Post Content", "created_at": "2024-07-24T00:00:00Z" }, comments: [] ]
 
--   Obter Post por id
+#### Obter Post por id
+
     GET /posts/:id
     Resposta: { "id": 1, "content": "Post Content", "created_at": "2024-07-24T00:00:00Z", comments: [] }
 
--   Atualizar post
-    PUT /posts/:id  
+#### Atualizar post
+
+    PUT /posts/:id
     Corpo: { "content": "Updated Content" }
     Cabeçalho: Authorization: Bearer session_token
     Resposta: { "id": 1, "content": "Updated Content", comments: [] }
 
--   Excluir post
+#### Excluir post
+
     DELETE /posts/:id
     Cabeçalho: Authorization: Bearer session_token
     Resposta: { "message": "Post deleted successfully" }
 
 ### Comentários
 
--   Criar Comentário
+#### Criar Comentário
 
 POST /comments
 Corpo: { "content": "Comment Content" }
 Cabeçalho: Authorization: Bearer session_token
 Resposta: { "id": 1, "post": postId, "content": "Comment Content", "user", userId, "created_at": "2024-07-24T00:00:00Z" }
 
--   Excluir comentário
+#### Excluir comentário
+
     DELETE /comments/:id
     Cabeçalho: Authorization: Bearer session_token
     Resposta: { "message": "Comment deleted successfully" }
